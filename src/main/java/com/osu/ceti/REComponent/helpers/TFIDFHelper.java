@@ -1,7 +1,6 @@
 package com.osu.ceti.REComponent.helpers;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TFIDFHelper {
 	
