@@ -15,7 +15,7 @@ import opennlp.tools.util.InvalidFormatException;
 
 /**
  * A helper class for performing operations on Strings
- * Contains methods for validating, tokenizing strings and removing stop words from strings
+ * Contains static methods for validating, tokenizing strings and removing stop words from strings
  * @author nhchdhr
  *
  */

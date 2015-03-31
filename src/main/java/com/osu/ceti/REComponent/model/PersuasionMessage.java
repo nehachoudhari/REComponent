@@ -1,5 +1,5 @@
 package com.osu.ceti.REComponent.model;
 
-public class PersuasionMessages {
+public class PersuasionMessage {
 
 }
