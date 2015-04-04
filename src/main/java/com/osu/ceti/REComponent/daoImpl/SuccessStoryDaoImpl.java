@@ -40,7 +40,7 @@ public class SuccessStoryDaoImpl implements SuccessStoryDao {
 
 	@Override
 	public List<SuccessStory> getAllSuccessStories() {
-		List<SuccessStory> list = (List<SuccessStory>) session.getCurrentSession().createQuery("from SuccessStories").list();
+		List<SuccessStory> list = (List<SuccessStory>) session.getCurrentSession().createQuery("from SuccessStory").list();
 		return list;
 	}
 	

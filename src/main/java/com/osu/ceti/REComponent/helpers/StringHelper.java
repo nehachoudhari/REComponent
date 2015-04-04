@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import opennlp.tools.stemmer.*;
 import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
 import opennlp.tools.util.InvalidFormatException;
+import snowballstemmer.PorterStemmer;
 
 
 /**
@@ -137,6 +139,21 @@ public class StringHelper {
 			}
 		}
 		return finalTokens;
+	}
+	
+	public static ArrayList<String> stemTags(ArrayList<String> tokens) {
+		
+		PorterStemmer stemmer = new PorterStemmer();
+		ArrayList<String> stemmedTags = new ArrayList<String>();    
+		
+		for(String s: tokens) {
+			stemmer.setCurrent(s);
+			if(stemmer.stem()){	
+				stemmedTags.add(stemmer.getCurrent());
+			}
+		}
+		
+		return stemmedTags;
 	}
 	
 }

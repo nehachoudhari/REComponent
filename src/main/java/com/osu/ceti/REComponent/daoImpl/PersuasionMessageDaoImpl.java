@@ -40,7 +40,7 @@ public class PersuasionMessageDaoImpl implements PersuasionMessageDao {
 
 	@Override
 	public List<PersuasionMessage> getAllPersuasionMessages() {
-		List<PersuasionMessage> list = (List<PersuasionMessage>) session.getCurrentSession().createQuery("from PersuasionMessages").list();
+		List<PersuasionMessage> list = (List<PersuasionMessage>) session.getCurrentSession().createQuery("from PersuasionMessage").list();
 		return list;
 	}
 
