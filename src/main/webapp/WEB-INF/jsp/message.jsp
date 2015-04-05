@@ -47,5 +47,10 @@
 		</tr>
 	</c:forEach>
 </table>
+
+<form:form action="redirect" method="GET">
+<input type="submit" name="action" value="story" />
+</form:form>
+
 </body>
 </html>
