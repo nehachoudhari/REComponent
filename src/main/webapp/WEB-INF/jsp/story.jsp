@@ -39,7 +39,11 @@
 			<td>tags</td>
 			<td><form:input path="tags" /></td>
 		</tr>
-		
+		<tr> 
+			<td>
+			<br />
+			</td>
+		</tr>
 		<tr>
 			<td colspan="2">
 				<input type="submit" name="action" value="Add" />

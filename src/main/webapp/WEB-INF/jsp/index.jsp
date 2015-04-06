@@ -8,7 +8,7 @@
 <title>Recommendation Engine</title>
 </head>
 <body>
-<h1>Manage Repository</h1>
+<h3>Manage Repository</h3>
 <br/>
 <table>
 	<tr>
@@ -24,13 +24,12 @@
 </form:form>
 		</td>
 	</tr>
-
+</table>
+<br/><br/>
+<h3>Add-on messages</h3>
+<table>
 <form:form action="getMessage" method="POST" commandName="message">
 	
-	<tr>
-			<td>Message Id</td>
-			<td><form:input path="msgId" /></td>
-		</tr>
 		<tr>
 			<td>Message Text</td>
 			<td><form:input path="text" /></td>
@@ -39,9 +38,19 @@
 			<td>Tags</td>
 			<td><form:input path="tags" /></td>
 		</tr>
+		<tr> 
+			<td>
+			<br />
+			</td>
+		</tr>
 		<tr>
 			<td colspan="2">
-				<input type="submit" name="action" value="Add" />
+				<input type="submit" name="action" value="Get Persuasion Message" />
+			</td>
+		</tr>
+		<tr> 
+			<td>
+			<br /> 
 			</td>
 		</tr>
 </form:form>
@@ -54,6 +63,39 @@
 		</c:if>
 		</tr>
 </table>
+<br /> <br />
+<table>
+<form:form action="getStory" method="POST" commandName="message">
+			
+		<tr>
+			<td>Message Text</td>
+			<td><form:input path="text" /></td>
+		</tr>
+		<tr>
+			<td>Tags</td>
+			<td><form:input path="tags" /></td>
+		</tr>
+		<tr> 
+			<td>
+			<br />
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<input type="submit" name="action" value="Get Success Story" />
+			</td>
+		</tr>
+</form:form>
+</table>
+<br/>
+<table>
+		<tr>
+		<c:if test="${not empty storyText}">
+			<td>${storyText}</td>
+		</c:if>
+		</tr>
+</table>
+
 
 </body>
 </html>

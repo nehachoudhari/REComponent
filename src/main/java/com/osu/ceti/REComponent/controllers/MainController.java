@@ -92,6 +92,8 @@ public class MainController {
 			PersuasionMessage message = new PersuasionMessage();
 			map.put("message", message);
 			map.put("messageList", pmService.getAllPersuasionMessages());
+			map.put("story", new SuccessStory());
+			map.put("storyList", ssService.getAllSuccessStories());
 		return "index";
 	}
 	
@@ -178,7 +180,20 @@ public class MainController {
 		return "index";
 	}
 	
+	@RequestMapping(value="/getStory", method=RequestMethod.POST)
+	public String getStory(@ModelAttribute PersuasionMessage message, BindingResult result,
+			@RequestParam String action, Map<String, Object> map){
 	
+		String userMsg = message.getText();
+		String tags = message.getTags();
+		
+		SuccessStory s = getSuccessStory(userMsg, tags);
+		String storyString = getSuccessStoryText(s);
+		
+		map.put("message", new PersuasionMessage());
+		map.put("storyText", storyString);
+		return "index";
+	}
 
 //	
 //	
@@ -322,14 +337,72 @@ difference.removeAll(s2);
 		 */
 	
 	}
-//	
-//	public SuccessStory getSuccessStory(String userMsg, ArrayList<String> tags){
-//		return null;
-//	}
-//	
-//	public String getSuccessStoryText(SuccessStory s) {
-//		return null;
-//	}
-//	
-//	
+	
+	public SuccessStory getSuccessStory(String userMsg, String tagString){
+		ArrayList<String> list = new ArrayList<String>(Arrays.asList(tagString.split(",")));
+		
+		ArrayList<String> inputTags = new ArrayList<String>();
+		
+		for(String item:list){
+			item = StringHelper.cleanString(item).replaceAll("\\s+", "");
+			inputTags.add(item);
+		}
+		
+		int lengthOfIntersection = 0;
+		ArrayList<SuccessStory> matchingStories = new ArrayList<SuccessStory>();
+		List<SuccessStory> storyList = ssService.getAllSuccessStories();
+		
+		for(SuccessStory s: storyList) {
+			ArrayList<String> tags = new ArrayList<String>(Arrays.asList(s.getTags().split(",")));
+			ArrayList<String> storyTags = new ArrayList<String>();
+			
+			for(String item:tags){
+				item = StringHelper.cleanString(item).replaceAll("\\s+", "");
+				storyTags.add(item);
+			}
+			Set<String> intersection = new HashSet<String>(inputTags);
+			intersection.retainAll(storyTags);
+			if(lengthOfIntersection==intersection.size()) {
+				matchingStories.add(s);
+			} else if(lengthOfIntersection<intersection.size()) {
+				lengthOfIntersection = intersection.size();
+				matchingStories = new ArrayList<SuccessStory>();
+				matchingStories.add(s);
+			}
+		}
+		
+		SuccessStory result = null;
+		if(matchingStories.size()>0) {
+			int r = (int) (Math.random() * (matchingStories.size()-1));
+			result = matchingStories.get(r);
+		} else {
+			int r = (int) (Math.random() * (storyList.size()-1));
+			result = storyList.get(r);
+		}
+		
+		return result;
+	}
+	
+	public String getSuccessStoryText(SuccessStory s) {
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("Name: ");
+		sb.append(s.getUsername());
+		sb.append("<br />");
+		sb.append("Age: ");
+		sb.append(s.getAge() + " years");
+		sb.append("<br />");
+		sb.append("Weight Before: ");
+		sb.append(s.getWeightbefore() + " lbs");
+		sb.append("<br />");
+		sb.append("Weight After: ");
+		sb.append(s.getWeightafter() + " lbs");
+		sb.append("<br />");
+		sb.append("How she did it: ");
+		sb.append(s.getWork());
+		
+		return sb.toString();
+	}
+	
+	
 }

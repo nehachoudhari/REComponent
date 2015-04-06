@@ -23,7 +23,11 @@
 			<td>Tags</td>
 			<td><form:input path="tags" /></td>
 		</tr>
-		
+		<tr> 
+			<td>
+			<br />
+			</td>
+		</tr>
 		<tr>
 			<td colspan="2">
 				<input type="submit" name="action" value="Add" />
@@ -47,9 +51,9 @@
 		</tr>
 	</c:forEach>
 </table>
-
+<br/>
 <form:form action="redirect" method="GET">
-<input type="submit" name="action" value="story" />
+<input type="submit" name="action" value="manage success stories" />
 </form:form>
 
 </body>
