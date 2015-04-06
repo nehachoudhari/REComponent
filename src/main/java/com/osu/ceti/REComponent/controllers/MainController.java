@@ -2,7 +2,16 @@ package com.osu.ceti.REComponent.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import opennlp.tools.util.InvalidFormatException;
+import antlr.StringUtils;
 
 import com.osu.ceti.REComponent.helpers.StringHelper;
 import com.osu.ceti.REComponent.model.PersuasionMessage;
@@ -77,8 +87,11 @@ public class MainController {
 //		return returnS;
 //	}
 	
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	   public String landingPage() {
+	@RequestMapping(value = "/index")
+	   public String landingPage(Map<String, Object> map){
+			PersuasionMessage message = new PersuasionMessage();
+			map.put("message", message);
+			map.put("messageList", pmService.getAllPersuasionMessages());
 		return "index";
 	}
 	
@@ -140,32 +153,33 @@ public class MainController {
 		}
 		map.put("story", storyResult);
 		map.put("storyList", ssService.getAllSuccessStories());
+		
+		ArrayList<String> lis = new ArrayList<String>();
+		lis.add("walk");
+		lis.add("miles");
+		
+		getPersuasionMessage("I am going to work out",lis);
+		
 		return "story";
 	}
 	
-//	public static void main(String[] args) throws InvalidFormatException, IOException {
-//		String s = "This is a pleasant thankful jogging run running miles day"; 
-//		ArrayList<String> tokens = StringHelper.tokenize(s);
-//		for(String s2 : tokens) {
-//			System.out.println(s2);
-//		}
-//		
-//		ArrayList<String> tokens2 = StringHelper.stemTags(tokens);
-//		for(String s2 : tokens2) {
-//			System.out.println(s2);
-//		}
-//		
-//		
-////		PersuasionMessage msg = new PersuasionMessage();
-////		msg.setTags("running, fitness");
-////		msg.setText("a test msg to check db connectivity");
-////		
-////		pmService.add(msg);
-////		
-////		System.out.println("Done");
-//		
-//	}
-//	
+	
+	@RequestMapping(value="/getMessage", method=RequestMethod.POST)
+	public String getMessage(@ModelAttribute PersuasionMessage message, BindingResult result,
+			@RequestParam String action, Map<String, Object> map){
+	
+		String userMsg = message.getText();
+		String tags = message.getTags();
+		ArrayList<String> list = new ArrayList<String>(Arrays.asList(tags.split(",")));
+		String p = getPersuasionMessage(userMsg, list);
+		
+		map.put("message", new PersuasionMessage());
+		map.put("message2", p);
+		return "index";
+	}
+	
+	
+
 //	
 //	
 //	/**
@@ -178,34 +192,136 @@ public class MainController {
 //		return null;
 //	}
 //	
-//	
-//	public PersuasionMessage getPersuasionMessage(String userMsg, ArrayList<String> tags) {
-//		ArrayList<String> al1;
-//		ArrayList<String> al2;
-//		
-//		/*
-//		 * Set<Type> union = new HashSet<Type>(s1);
-//		union.addAll(s2);
 //
-//Set<Type> intersection = new HashSet<Type>(s1);
-//intersection.retainAll(s2);
-//
-//Set<Type> difference = new HashSet<Type>(s1);
-//difference.removeAll(s2);
-//		 */
-//		
-//		/*
-//		 * 
-//		 * check if user msg empty
-//		 * if not do msg matching add to array list 1
-//		 * do tag matching add to array list 2
-//		 * take intersection 
-//		 * if empty take union 
-//		 * select random msg from union if not empty
-//		 * if empty take random msg from db
-//		 */
-//		return null;
-//	}
+	private class TagComparison implements Comparator<TagComparison>, Comparable<TagComparison>{
+
+		public String[] tags;
+		public HashSet<String> set;
+		public HashSet<String> givenSet;
+		
+		public TagComparison(String[] tags, HashSet<String> givenSet){
+			this.tags = tags;
+			set = new HashSet<String>(Arrays.asList(tags));
+			this.givenSet = givenSet;
+		}
+		
+		public int comparisionSize(){
+			
+			Set<String> intersection = new HashSet<String>(set);
+			intersection.retainAll(givenSet);
+			return intersection.size();
+			
+		}
+		
+		//Note need to change the return values here to reflect a max priority queue
+		
+		@Override
+		public int compare(TagComparison o1, TagComparison o2) {
+			// TODO Auto-generated method stub
+			if(o1.comparisionSize()<o2.comparisionSize()){
+				return 1;
+			}
+			else if(o1.comparisionSize()>o2.comparisionSize()){
+				return -1;
+			}
+			else{
+				return 0;
+			}
+		}
+
+		@Override
+		public int compareTo(TagComparison o) {
+			// TODO Auto-generated method stub
+			
+			if(this.comparisionSize()<o.comparisionSize())
+				return 1;
+			else if(this.comparisionSize()>o.comparisionSize())
+				return -1;
+			else
+			return 0;
+		}
+		
+	}
+	
+	public String getPersuasionMessage(String userMsg, ArrayList<String> tags) {
+		
+		HashSet<String> tagsSet = new HashSet<String>(tags);
+		
+		HashMap<String,String> msgMap = new HashMap<String,String>();
+		
+		List<PersuasionMessage> msgList;
+		
+		msgList = pmService.getAllPersuasionMessages();
+	
+		ArrayList<ArrayList<String>> tagStringList = new ArrayList<ArrayList<String>>();
+		
+		for(PersuasionMessage msg:msgList){
+			
+			ArrayList<String> list = new ArrayList<String>(Arrays.asList(msg.getTags().split(",")));
+			
+			ArrayList<String> list2 = new ArrayList<String>();
+			
+			for(String item:list){
+				item = StringHelper.cleanString(item).replaceAll("\\s+", "");
+				list2.add(item);
+			}
+			
+			//list2 = StringHelper.stemTags(list2);
+				
+			tagStringList.add(list2);
+			
+			msgMap.put(msg.getTags(), msg.getText());
+		}
+		
+		//now find most similar tag list, convert it to a string and use msgMap to get the message
+		
+		//store in the max priority queue, check if this queue is indeed max priority queue 
+		
+		PriorityQueue<TagComparison> queue = new PriorityQueue<TagComparison>();
+		
+		for(ArrayList<String> tagsList:tagStringList){
+			queue.add(new TagComparison(tagsList.toArray(new String[tagsList.size()]),tagsSet));
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		
+		for(String item: queue.peek().tags){
+			sb.append(item);
+			sb.append(", ");
+		}
+		
+		sb.setLength(sb.length()-2);
+		
+		return msgMap.get(new String(sb));
+		
+		////return the above message
+		
+		
+		
+		
+		/*
+		 * Set<Type> union = new HashSet<Type>(s1);
+		union.addAll(s2);
+
+Set<Type> intersection = new HashSet<Type>(s1);
+intersection.retainAll(s2);
+
+Set<Type> difference = new HashSet<Type>(s1);
+difference.removeAll(s2);
+		 */
+		
+		/*
+		 * 
+		 * check if user msg empty
+		 * if not do msg matching add to array list 1
+		 * do tag matching add to array list 2
+		 * take intersection 
+		 * if empty take union 
+		 * select random msg from union if not empty
+		 * if empty take random msg from db
+		 */
+	
+	}
 //	
 //	public SuccessStory getSuccessStory(String userMsg, ArrayList<String> tags){
 //		return null;

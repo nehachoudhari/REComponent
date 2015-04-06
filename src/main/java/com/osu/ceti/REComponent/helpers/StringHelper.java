@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import opennlp.tools.stemmer.*;
 import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
@@ -147,6 +146,7 @@ public class StringHelper {
 		ArrayList<String> stemmedTags = new ArrayList<String>();    
 		
 		for(String s: tokens) {
+			s = StringHelper.cleanString(s);
 			stemmer.setCurrent(s);
 			if(stemmer.stem()){	
 				stemmedTags.add(stemmer.getCurrent());

@@ -15,20 +15,45 @@
 	<td>Manage</td>
 		<td>
 		<form:form action="redirect2" method="GET">
-		<input type="submit" name="action" value="message" />
+		<input type="submit" name="action" value="Persuasion Messages" />
 		</form:form>
 		</td>
 		<td>
 		<form:form action="redirect" method="GET">
-<input type="submit" name="action" value="story" />
+<input type="submit" name="action" value="Success Stories" />
 </form:form>
 		</td>
 	</tr>
 
+<form:form action="getMessage" method="POST" commandName="message">
+	
+	<tr>
+			<td>Message Id</td>
+			<td><form:input path="msgId" /></td>
+		</tr>
+		<tr>
+			<td>Message Text</td>
+			<td><form:input path="text" /></td>
+		</tr>
+		<tr>
+			<td>Tags</td>
+			<td><form:input path="tags" /></td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<input type="submit" name="action" value="Add" />
+			</td>
+		</tr>
+</form:form>
 </table>
 
-
-
+<table>
+		<tr>
+		<c:if test="${not empty message2}">
+			<td>${message2}</td>
+		</c:if>
+		</tr>
+</table>
 
 </body>
 </html>
