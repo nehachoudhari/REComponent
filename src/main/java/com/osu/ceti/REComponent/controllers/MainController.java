@@ -30,6 +30,10 @@ import com.osu.ceti.REComponent.model.SuccessStory;
 import com.osu.ceti.REComponent.services.PersuasionMessageService;
 import com.osu.ceti.REComponent.services.SuccessStoryService;
 
+/**
+ * @author nhchdhr
+ *
+ */
 @Controller
 public class MainController {
 
@@ -38,6 +42,19 @@ public class MainController {
 	@Autowired 
 	private SuccessStoryService ssService;
 	
+	
+	//main landing page
+	@RequestMapping(value = "/index")
+	public String landingPage(Map<String, Object> map){
+			PersuasionMessage message = new PersuasionMessage();
+			map.put("message", message);
+			map.put("messageList", pmService.getAllPersuasionMessages());
+			map.put("story", new SuccessStory());
+			map.put("storyList", ssService.getAllSuccessStories());
+		return "index";
+	}
+	
+	//landing page for managing persuasion message repository
 	@RequestMapping("/message")
 	public String setupForm(Map<String, Object> map){
 		PersuasionMessage message = new PersuasionMessage();
@@ -46,11 +63,12 @@ public class MainController {
 		return "message";
 	}
 	
+	//controller for CRUD operations on the PersuasionMessage table
 	@RequestMapping(value="/message.do", method=RequestMethod.POST)
 	public String doActions(@ModelAttribute  PersuasionMessage message, BindingResult result,
 			@RequestParam String action, Map<String, Object> map){
 		PersuasionMessage messageResult = new PersuasionMessage();
-		switch(action.toLowerCase()){	//only in Java7 you can put String in switch
+		switch(action.toLowerCase()){
 		case "add":
 			pmService.add(message);
 			messageResult = message;
@@ -74,55 +92,22 @@ public class MainController {
 	}
 	
 	
-//	@RequestMapping(value="/redirect", method=RequestMethod.POST)
-//	public String redirect(@ModelAttribute  PersuasionMessage message, BindingResult result,
-//			@RequestParam String action, Map<String, Object> map){
-//		
-//		String returnS = "";
-//		switch(action.toLowerCase()){	//only in Java7 you can put String in switch
-//		case "redirect":
-//			returnS = "story";
-//			break;
-//		}
-//		return returnS;
-//	}
-	
-	@RequestMapping(value = "/index")
-	   public String landingPage(Map<String, Object> map){
-			PersuasionMessage message = new PersuasionMessage();
-			map.put("message", message);
-			map.put("messageList", pmService.getAllPersuasionMessages());
-			map.put("story", new SuccessStory());
-			map.put("storyList", ssService.getAllSuccessStories());
-		return "index";
-	}
-	
-//	@RequestMapping(value = "/redirect", method = RequestMethod.GET)
-//	   public String redirect(@ModelAttribute String input, BindingResult result, @RequestParam String action) {
-//		String returnS="story";
-//		switch(action.toLowerCase()){	
-//		case "story":
-//			returnS= "redirect:story";
-//			
-//		case "message":
-//			returnS= "redirect:message";
-//		
-//		}
-//	    return returnS;  
-//	   }
-	
+	//redirect to managing the persuasion message repository
 	@RequestMapping(value = "/redirect2", method = RequestMethod.GET)
 	   public String redirect2() {
 	     
 	      return "redirect:message";
 	   }
 	   
+	//redirect to managing the success stories repository
 	@RequestMapping(value = "/redirect", method = RequestMethod.GET)
 	   public String redirect() {
 	     
 	      return "redirect:story";
 	   }
 	
+	
+	//landing page for managing success stories repository
 	@RequestMapping("/story")
 	public String setupForm2(Map<String, Object> map){
 		SuccessStory story = new SuccessStory();
@@ -131,9 +116,11 @@ public class MainController {
 		return "story";
 	}
 	
+	
+	//controller for CRUD operations on the SuccessStory table
 	@RequestMapping(value="/story.do", method=RequestMethod.POST)
 	public String doActions2(@ModelAttribute SuccessStory story, BindingResult result,
-			@RequestParam String action, Map<String, Object> map){
+			@RequestParam String action, Map<String, Object> map) throws InvalidFormatException, IOException{
 		SuccessStory storyResult = new SuccessStory();
 		switch(action.toLowerCase()){	
 		case "add":
@@ -156,33 +143,50 @@ public class MainController {
 		map.put("story", storyResult);
 		map.put("storyList", ssService.getAllSuccessStories());
 		
-		ArrayList<String> lis = new ArrayList<String>();
-		lis.add("walk");
-		lis.add("miles");
-		
-		getPersuasionMessage("I am going to work out",lis);
-		
 		return "story";
 	}
 	
 	
+	
+	/**
+	 * An api that the consuming systems can use to get Persuasion add on messages for the email invitations
+	 * the actual method called is 'getPersuasionMessage'
+	 * @param message
+	 * @param result
+	 * @param action
+	 * @param map
+	 * @return Add-on persuasion message
+	 * @throws IOException 
+	 * @throws InvalidFormatException 
+	 */
 	@RequestMapping(value="/getMessage", method=RequestMethod.POST)
 	public String getMessage(@ModelAttribute PersuasionMessage message, BindingResult result,
-			@RequestParam String action, Map<String, Object> map){
+			@RequestParam String action, Map<String, Object> map) throws InvalidFormatException, IOException{
 	
 		String userMsg = message.getText();
 		String tags = message.getTags();
-		ArrayList<String> list = new ArrayList<String>(Arrays.asList(tags.split(",")));
-		String p = getPersuasionMessage(userMsg, list);
+		String p = getPersuasionMessage(userMsg, tags);
 		
 		map.put("message", new PersuasionMessage());
 		map.put("message2", p);
-		return "index";
+		return "index"; //display message on the same page for testing
 	}
 	
+	/**
+	 * An api that the consuming systems can use to get success stories add on messages for the email invitations
+	 * the actual method called is 'getSuccessStory'
+	 * 
+	 * @param message
+	 * @param result
+	 * @param action
+	 * @param map
+	 * @return an html text of success story
+	 * @throws InvalidFormatException
+	 * @throws IOException
+	 */
 	@RequestMapping(value="/getStory", method=RequestMethod.POST)
 	public String getStory(@ModelAttribute PersuasionMessage message, BindingResult result,
-			@RequestParam String action, Map<String, Object> map){
+			@RequestParam String action, Map<String, Object> map) throws InvalidFormatException, IOException{
 	
 		String userMsg = message.getText();
 		String tags = message.getTags();
@@ -195,19 +199,12 @@ public class MainController {
 		return "index";
 	}
 
-//	
-//	
-//	/**
-//	 * An api that the consuming systems can use to get add on messages for the email invitations
-//	 * @param userMsg : a personalized message that the sender of invitation has added for the receiver 
-//	 * @param tags : a list of tags that of all the activities in the quest for which the invitation is being sent
-//	 * @return an object of type PersuasionMessage or SuccessStory
-//	 */
-//	public Object getAddOnMessage(String userMsg, ArrayList<String> tags) {
-//		return null;
-//	}
-//	
-//
+
+	/**
+	 * A private class for tags comparisons
+	 * @author nhchdhr
+	 *
+	 */
 	private class TagComparison implements Comparator<TagComparison>, Comparable<TagComparison>{
 
 		public String[] tags;
@@ -258,9 +255,80 @@ public class MainController {
 		
 	}
 	
-	public String getPersuasionMessage(String userMsg, ArrayList<String> tags) {
+	
+	/**
+	 * An api that the consuming systems can use to get success story add on messages for the email invitations
+	 * @param userMsg : a personalized message that the sender of invitation has added for the receiver 
+	 * @param tags : a list of tags that of all the activities in the quest for which the invitation is being sent
+	 * @return an object of type PersuasionMessage or SuccessStory
+	 * @throws IOException 
+	 * @throws InvalidFormatException 
+	 */
+	public String getPersuasionMessage(String userMsg, String tags) throws InvalidFormatException, IOException {
 		
-		HashSet<String> tagsSet = new HashSet<String>(tags);
+		//tokenize the tags into an array list
+		ArrayList<String> list = StringHelper.tokenize(tags);
+
+		// we will use this only if there are no tags
+		ArrayList<String> listTokens = StringHelper.tokenize(userMsg);
+
+		if (!StringHelper.isValid(tags)) {
+			list = listTokens; // use tokens in user message if the tags are empty
+		}
+
+		// stem the list of tags for better matching
+		list = StringHelper.stemTags(list);
+
+		// maintain the max length of intersection
+		int lengthOfIntersection = 0;
+
+		// maintain a list of messages with number of matching tags
+		ArrayList<PersuasionMessage> matchingMessages = new ArrayList<PersuasionMessage>();
+
+		// get a list of all persuasion messages from database
+		List<PersuasionMessage> messageList = pmService.getAllPersuasionMessages();
+
+		// iterate over each story and calculate matching score
+		for (PersuasionMessage p : messageList) {
+
+			// tokenize and stem the tags for the persuasion message p
+			ArrayList<String> msgTags = StringHelper.tokenize(p.getTags());
+			msgTags = StringHelper.stemTags(msgTags);
+
+			// calculate the matching number of tags
+			Set<String> intersection = new HashSet<String>(list);
+			intersection.retainAll(msgTags);
+
+			if (lengthOfIntersection == intersection.size()) {
+				// if same number of matching tags add to list of matching messages
+				matchingMessages.add(p);
+
+			} else if (lengthOfIntersection < intersection.size()) {
+				// otherwise if the length is more, update the max length of intersection
+				lengthOfIntersection = intersection.size();
+
+				// and clear the list of matching stories
+				matchingMessages = new ArrayList<PersuasionMessage>();
+
+				// add this message to the list of matching messages
+				matchingMessages.add(p);
+			}
+		}
+
+		PersuasionMessage result = null;
+		if (matchingMessages.size() > 0) {
+			// get a random from matching messages with same matching score
+			int r = (int) (Math.random() * (matchingMessages.size() - 1));
+			result = matchingMessages.get(r);
+		} else {
+			// get a random persuasion message from all the messages in database
+			int r = (int) (Math.random() * (messageList.size() - 1));
+			result = messageList.get(r);
+		}
+
+		return result.getText();
+		
+		/*HashSet<String> tagsSet = new HashSet<String>(tags);
 		
 		HashMap<String,String> msgMap = new HashMap<String,String>();
 		
@@ -310,72 +378,82 @@ public class MainController {
 		return msgMap.get(new String(sb));
 		
 		////return the above message
-		
-		
-		
-		
-		/*
-		 * Set<Type> union = new HashSet<Type>(s1);
-		union.addAll(s2);
-
-Set<Type> intersection = new HashSet<Type>(s1);
-intersection.retainAll(s2);
-
-Set<Type> difference = new HashSet<Type>(s1);
-difference.removeAll(s2);
-		 */
-		
-		/*
-		 * 
-		 * check if user msg empty
-		 * if not do msg matching add to array list 1
-		 * do tag matching add to array list 2
-		 * take intersection 
-		 * if empty take union 
-		 * select random msg from union if not empty
-		 * if empty take random msg from db
-		 */
+		*/
+		}
 	
-	}
 	
-	public SuccessStory getSuccessStory(String userMsg, String tagString){
-		ArrayList<String> list = new ArrayList<String>(Arrays.asList(tagString.split(",")));
+	/**
+	 * This method takes tags of the activities in quest invitation
+	 * and a message from user as input and 
+	 * calculates a success story that is most suitable as an add on message to 
+	 * the current quest invitation 
+	 * 
+	 * @param userMsg : String, a personalized message that the sender of invitation has added for the receiver 
+	 * @param tagString : String, a comma separated list of tags of all the activities in the quest for which the invitation is being sent
+	 * @return a success story with maximum matching
+	 * @throws InvalidFormatException
+	 * @throws IOException
+	 */
+	public SuccessStory getSuccessStory(String userMsg, String tagString) throws InvalidFormatException, IOException{
 		
-		ArrayList<String> inputTags = new ArrayList<String>();
+		//tokenize the tags into an array list
+		ArrayList<String> list = StringHelper.tokenize(tagString);
 		
-		for(String item:list){
-			item = StringHelper.cleanString(item).replaceAll("\\s+", "");
-			inputTags.add(item);
+		//we will use this only if there are no tags
+		ArrayList<String> listTokens = StringHelper.tokenize(userMsg);
+		
+		if(!StringHelper.isValid(tagString)) {
+			list = listTokens; //use tokens in user message if the tags are empty
 		}
 		
+		//stem the list of tags for better matching
+		list = StringHelper.stemTags(list); 
+		
+		
+		//maintain the max length of intersection
 		int lengthOfIntersection = 0;
+		
+		//maintain a list of stories with number of matching tags
 		ArrayList<SuccessStory> matchingStories = new ArrayList<SuccessStory>();
+		
+		//get a list of all stories from database
 		List<SuccessStory> storyList = ssService.getAllSuccessStories();
 		
+		//iterate over each story and calculate matching score
 		for(SuccessStory s: storyList) {
-			ArrayList<String> tags = new ArrayList<String>(Arrays.asList(s.getTags().split(",")));
-			ArrayList<String> storyTags = new ArrayList<String>();
+
+			//tokenize and stem the tags for the story
+			ArrayList<String> storyTags = StringHelper.tokenize(s.getTags());			
+			storyTags = StringHelper.stemTags(storyTags);
 			
-			for(String item:tags){
-				item = StringHelper.cleanString(item).replaceAll("\\s+", "");
-				storyTags.add(item);
-			}
-			Set<String> intersection = new HashSet<String>(inputTags);
+			//calculate the matching number of tags
+			Set<String> intersection = new HashSet<String>(list);
 			intersection.retainAll(storyTags);
+			
+		
 			if(lengthOfIntersection==intersection.size()) {
-				matchingStories.add(s);
-			} else if(lengthOfIntersection<intersection.size()) {
-				lengthOfIntersection = intersection.size();
-				matchingStories = new ArrayList<SuccessStory>();
-				matchingStories.add(s);
+				//if same number of matching tags add to list of matching stories
+				matchingStories.add(s); 
+				
+			} else if(lengthOfIntersection < intersection.size()) {
+				//otherwise if the length is more, update the max length of intersection
+				lengthOfIntersection = intersection.size(); 
+				
+				//and clear the list of matching stories
+				matchingStories = new ArrayList<SuccessStory>(); 
+				
+				//add this story to the list of matching stories
+				matchingStories.add(s); 
 			}
 		}
 		
 		SuccessStory result = null;
 		if(matchingStories.size()>0) {
-			int r = (int) (Math.random() * (matchingStories.size()-1));
+			//get a random from matching stories with same matching score
+			int r = (int) (Math.random() * (matchingStories.size()-1)); 
 			result = matchingStories.get(r);
 		} else {
+			//get a random success story from all the stories in database
 			int r = (int) (Math.random() * (storyList.size()-1));
 			result = storyList.get(r);
 		}
@@ -383,6 +461,12 @@ difference.removeAll(s2);
 		return result;
 	}
 	
+	/**
+	 * This method takes a success story object and returns
+	 * a string with a suitable display-able html text of the success story 
+	 * @param s : SuccessStory
+	 * @return string
+	 */
 	public String getSuccessStoryText(SuccessStory s) {
 		
 		StringBuilder sb = new StringBuilder();

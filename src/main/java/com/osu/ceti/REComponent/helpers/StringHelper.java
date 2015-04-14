@@ -1,5 +1,6 @@
 package com.osu.ceti.REComponent.helpers;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,18 +74,20 @@ public class StringHelper {
 	 * @return array of tags 
 	 */
 	public static String[] getTokens(String tags) {
-		
-//		ArrayList<String> tagList = new ArrayList<String>();
 		String[] strings = tags.split(",");
 		return strings;
 	}
 	
 	/**
 	 * A method to remove unwanted characters from the string
+	 * and to lower case the string content to treat upper and lower case as same 
 	 * @param s
-	 * @return
+	 * @return a clean string
 	 */
 	public static String cleanString(String s){
+		if(!isValid(s)) {
+			return s;
+		}
 		s = s.trim();
 		s = s.toLowerCase();
 		return s;
@@ -111,7 +114,11 @@ public class StringHelper {
 	 * @throws IOException
 	 */
 	public static ArrayList<String> tokenize(String s) throws InvalidFormatException, IOException {
-		InputStream is = new FileInputStream("en-token.bin");
+		//troubleshoot tip: this is absolute path, change this while running on other computers
+		String filename = "/Users/nhchdhr/Documents/workspace/REComponent/src/main/resources/en-token.bin";
+        File file = new File(filename);
+        
+		InputStream is = new FileInputStream(file);
 	 
 		TokenizerModel model = new TokenizerModel(is);
 	 
@@ -140,8 +147,16 @@ public class StringHelper {
 		return finalTokens;
 	}
 	
+	/**
+	 * A method to stem the words to their roots
+	 * ie. to treat all form of a word as same
+	 * for example running, ran, run all mean the root word 'run' in our context
+	 * 
+	 * @param tokens: an array list of strings
+	 * @return an array list of stemmed strings
+	 */
 	public static ArrayList<String> stemTags(ArrayList<String> tokens) {
-		
+		//troubleshoot tip: this may not work if snowball-stemmer jar is not exported to the server before execution
 		PorterStemmer stemmer = new PorterStemmer();
 		ArrayList<String> stemmedTags = new ArrayList<String>();    
 		
