@@ -1,16 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.osu.ceti</groupId>
-  <artifactId>REComponent</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>war</packaging>
+	<groupId>com.osu.ceti</groupId>
+	<artifactId>REComponent</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 
-  <name>REComponent</name>
-  <url>http://maven.apache.org</url>
+	<name>REComponent</name>
+	<url>http://maven.apache.org</url>
 
-  <properties>
+	<properties>
 
 		<!-- Generic properties -->
 		<java.version>1.6</java.version>
@@ -75,15 +75,15 @@
 
 
 		<!-- Log4j -->
-	<dependency>
-		<groupId>log4j</groupId>
-		<artifactId>log4j</artifactId>
-		<version>1.2.14</version>
-		<type>jar</type>
-		<scope>compile</scope>
-	</dependency>
-	
-		
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+
+
 
 		<!-- Hibernate -->
 		<dependency>
@@ -139,53 +139,76 @@
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.6.11</version>
 		</dependency>
-    <dependency>
-    	<groupId>org.apache.opennlp</groupId>
-    	<artifactId>opennlp-tools</artifactId>
-    	<version>1.5.3</version>
-    </dependency>
+		<dependency>
+			<groupId>org.apache.opennlp</groupId>
+			<artifactId>opennlp-tools</artifactId>
+			<version>1.5.3</version>
+		</dependency>
 
 
 
-
-    <dependency>
-    	<groupId>mysql</groupId>
-    	<artifactId>mysql-connector-java</artifactId>
-    	<version>5.1.34</version>
-    </dependency>
-    <dependency>
-    	<groupId>commons-dbcp</groupId>
-    	<artifactId>commons-dbcp</artifactId>
-    	<version>20030825.184428</version>
-    </dependency>
-    <dependency>
-    	<groupId>commons-pool</groupId>
-    	<artifactId>commons-pool</artifactId>
-    	<version>20030825.183949</version>
-    </dependency>
-    <dependency>
-    	<groupId>commons-collections</groupId>
-    	<artifactId>commons-collections</artifactId>
-    	<version>2.1.1</version>
-    </dependency>
-    <dependency>
-    	<groupId>com.github.rholder</groupId>
-    	<artifactId>snowball-stemmer</artifactId>
-    	<version>1.3.0.581.1</version>
-    </dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.34</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>20030825.184428</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
+			<version>20030825.183949</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.rholder</groupId>
+			<artifactId>snowball-stemmer</artifactId>
+			<version>1.3.0.581.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+			<version>3.2</version>
+		</dependency>
+		
+		<dependency>
+		<groupId>org.apache.mahout</groupId>
+		<artifactId>mahout-core</artifactId>
+		<version>0.9</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.mahout</groupId>
+		<artifactId>mahout-math</artifactId>
+		<version>0.9</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.mahout</groupId>
+		<artifactId>mahout-integration</artifactId>
+		<version>0.9</version>
+	</dependency>
+		
+		
 	</dependencies>
+	
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.0.2</version>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

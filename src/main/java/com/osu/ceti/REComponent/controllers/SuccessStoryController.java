@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.osu.ceti.REComponent.model.PersuasionMessage;
 import com.osu.ceti.REComponent.model.SuccessStory;
-import com.osu.ceti.REComponent.services.PersuasionMessageService;
 import com.osu.ceti.REComponent.services.SuccessStoryService;
 
 public class SuccessStoryController {
